@@ -1,21 +1,24 @@
 {
   "name": "inventory-management-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Production-style REST API for inventory management built with Node.js, Express and TypeScript.",
+  "main": "src/server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/app.js",
+    "start:dev": "tsx watch src/app.ts",
+    "build": "tsc"
   },
   "keywords": [],
-  "author": "",
+  "author": "Marko Jovicic",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.2.0",
+    "nodemon": "^3.1.14",
     "tsx": "^4.23.11",
     "typescript": "^7.0.2"
   }

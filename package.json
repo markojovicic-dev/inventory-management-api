@@ -4,8 +4,8 @@
   "description": "Production-style REST API for inventory management built with Node.js, Express and TypeScript.",
   "main": "src/server.ts",
   "scripts": {
-    "start": "node dist/app.js",
-    "start:dev": "tsx watch src/app.ts",
+    "start": "node dist/server.js",
+    "start:dev": "tsx watch src/server.ts",
     "build": "tsc"
   },
   "keywords": [],
@@ -13,7 +13,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "express": "^5.2.1"
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.23.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

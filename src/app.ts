@@ -1,10 +1,13 @@
-import express from 'express';
+import express from "express";
 
-const app = express()
+import router from "./routes/index.js";
+import productRouter from "./modules/products/product.routes.js";
 
-app.get('/', (req, res) => {
-    console.log('consoleee')
-    res.json('Hello');
-});
+const app = express();
 
-app.listen(3000, () => console.log('Listening on port 3000'))
+app.use(express.json());
+
+app.use(router);
+app.use("/products", productRouter);
+
+export default app;

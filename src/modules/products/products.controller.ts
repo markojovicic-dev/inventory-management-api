@@ -22,7 +22,6 @@ export async function createProduct(
 ) {
   try {
     const product = await productService.createProduct(req.body);
-    console.log(product);
     res.status(201).json(product);
   } catch (error) {
     next(error);

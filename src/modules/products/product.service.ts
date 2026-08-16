@@ -1,3 +1,4 @@
+import type { UpdateProduct } from "../../types/productType.js";
 import * as productRepository from "./product.repository.js";
 
 export async function getProducts() {
@@ -25,25 +26,8 @@ export async function createProduct(data: {
   );
 }
 
-export async function updateProduct(
-  id: number,
-  data: {
-    name: string;
-    sku: string;
-    price: number;
-    categoryId: number;
-    supplierId: number;
-  },
-) {
-  const { name, sku, price, categoryId, supplierId } = data;
-  return await productRepository.updateProduct(
-    id,
-    name,
-    sku,
-    price,
-    categoryId,
-    supplierId,
-  );
+export async function updateProduct(id: number, data: UpdateProduct) {
+  return await productRepository.updateProduct(id, data);
 }
 
 export async function deleteProduct(id: number) {

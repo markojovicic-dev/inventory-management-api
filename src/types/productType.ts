@@ -1,5 +1,9 @@
 import * as z from "zod";
 
+export const productIdSchema = z.object({
+  id: z.coerce.number().int().positive().min(1),
+});
+
 export const createProductSchema = z.object({
   name: z
     .string()
@@ -15,3 +19,12 @@ export const createProductSchema = z.object({
   categoryId: z.number().int().positive(),
   supplierId: z.number().int().positive(),
 });
+
+export const updateProductSchema = createProductSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided",
+  });
+
+export type CreateProduct = z.infer<typeof createProductSchema>;
+export type UpdateProduct = z.infer<typeof updateProductSchema>;

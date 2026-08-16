@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import * as productService from "./product.service.js";
-import { BadRequestError } from "../../errors/errorTypes.js";
+import { BadRequestError, NotFoundError } from "../../errors/errorTypes.js";
 
 export async function getProducts(
   req: Request,
@@ -9,7 +9,6 @@ export async function getProducts(
 ) {
   try {
     const product = await productService.getProducts();
-
     return res.status(200).json(product);
   } catch (error) {
     next(error);
@@ -23,14 +22,9 @@ export async function getProduct(
 ) {
   try {
     const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id <= 0) {
-      throw new BadRequestError("Invalid product ID");
-    }
     const product = await productService.getProduct(id);
     if (Array.isArray(product) && product.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Product does not exists in database" });
+      throw new NotFoundError("Product does not exists in database");
     }
     return res.status(200).json(product);
   } catch (error) {
@@ -58,8 +52,12 @@ export async function updateProduct(
 ) {
   try {
     const id = Number(req.params.id);
-    const product = await productService.updateProduct(id, req.body);
-    return res.status(200).json(product);
+    const product = await productService.getProduct(id);
+    if (Array.isArray(product) && product.length === 0) {
+      throw new NotFoundError("Product does not exists in database");
+    }
+    const updatedProduct = await productService.updateProduct(id, req.body);
+    return res.status(200).json(updatedProduct);
   } catch (error) {
     next(error);
   }
@@ -71,17 +69,13 @@ export async function deleteProduct(
   next: NextFunction,
 ) {
   try {
-    const productId = Number(req.params.id);
-    const product = await productService.getProduct(productId);
+    const id = Number(req.params.id);
+    const product = await productService.getProduct(id);
     if (Array.isArray(product) && product.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Product does not exists in database" });
+      throw new NotFoundError("Product does not exists in database");
     }
-    await productService.deleteProduct(productId);
-    return res
-      .status(200)
-      .json({ message: `Deleted product with id: ${productId}` });
+    await productService.deleteProduct(id);
+    return res.status(200).json({ message: `Deleted product with id: ${id}` });
   } catch (error) {
     next(error);
   }

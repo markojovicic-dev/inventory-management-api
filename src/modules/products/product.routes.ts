@@ -7,23 +7,38 @@ import {
   deleteProduct,
   getProduct,
 } from "./products.controller.js";
-import { validationMiddleware } from "../../middleware/validationMiddleware.js";
-import { createProductSchema } from "../../types/productType.js";
+import {
+  validateParams,
+  validationBody,
+} from "../../middleware/validationMiddleware.js";
+import {
+  createProductSchema,
+  productIdSchema,
+  updateProductSchema,
+} from "../../types/productType.js";
 
 const productRouter = Express.Router();
 
 productRouter.get("/", getProducts);
 
-productRouter.get("/:id", getProduct);
+productRouter.get("/:id", validateParams(productIdSchema), getProduct);
 
-productRouter.post(
-  "/",
-  validationMiddleware(createProductSchema),
-  createProduct,
+productRouter.post("/", validationBody(createProductSchema), createProduct);
+
+productRouter.put(
+  "/:id",
+  validateParams(productIdSchema),
+  validationBody(createProductSchema),
+  updateProduct,
 );
 
-productRouter.put("/:id", updateProduct);
+productRouter.patch(
+  "/:id",
+  validateParams(productIdSchema),
+  validationBody(updateProductSchema),
+  updateProduct,
+);
 
-productRouter.delete("/:id", deleteProduct);
+productRouter.delete("/:id", validateParams(productIdSchema), deleteProduct);
 
 export default productRouter;

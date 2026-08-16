@@ -16,7 +16,28 @@ export async function createProduct(data: {
   supplierId: number;
 }) {
   const { name, sku, price, categoryId, supplierId } = data;
-  return productRepository.createProduct(
+  return await productRepository.createProduct(
+    name,
+    sku,
+    price,
+    categoryId,
+    supplierId,
+  );
+}
+
+export async function updateProduct(
+  id: number,
+  data: {
+    name: string;
+    sku: string;
+    price: number;
+    categoryId: number;
+    supplierId: number;
+  },
+) {
+  const { name, sku, price, categoryId, supplierId } = data;
+  return await productRepository.updateProduct(
+    id,
     name,
     sku,
     price,

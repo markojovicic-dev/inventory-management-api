@@ -28,6 +28,21 @@ export async function createProduct(
   return result;
 }
 
+export async function updateProduct(
+  id: number,
+  name: string,
+  sku: string,
+  price: number,
+  categoryId: number,
+  supplierId: number,
+) {
+  const [result] = await pool.execute(
+    `UPDATE products SET name = ?, sku = ?, price = ?, category_id = ?, supplier_id = ? WHERE id = ?`,
+    [name, sku, price, categoryId, supplierId, id],
+  );
+  return result;
+}
+
 export async function deleteProduct(id: number) {
   await pool.execute(`DELETE from products WHERE id = ?`, [id]);
 }

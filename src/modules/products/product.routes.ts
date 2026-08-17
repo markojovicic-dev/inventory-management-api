@@ -9,7 +9,7 @@ import {
 } from "./products.controller.js";
 import {
   validateParams,
-  validationBody,
+  validateBody,
 } from "../../middleware/validationMiddleware.js";
 import {
   createProductSchema,
@@ -23,19 +23,19 @@ productRouter.get("/", getProducts);
 
 productRouter.get("/:id", validateParams(productIdSchema), getProduct);
 
-productRouter.post("/", validationBody(createProductSchema), createProduct);
+productRouter.post("/", validateBody(createProductSchema), createProduct);
 
 productRouter.put(
   "/:id",
   validateParams(productIdSchema),
-  validationBody(createProductSchema),
+  validateBody(createProductSchema),
   updateProduct,
 );
 
 productRouter.patch(
   "/:id",
   validateParams(productIdSchema),
-  validationBody(updateProductSchema),
+  validateBody(updateProductSchema),
   updateProduct,
 );
 

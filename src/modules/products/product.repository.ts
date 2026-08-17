@@ -1,35 +1,44 @@
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
-import type { UpdateProduct } from "../../types/productType.js";
+import type { CreateProduct, UpdateProduct } from "../../types/productType.js";
+
+export interface Product extends RowDataPacket {
+  name: string;
+  sku: string;
+  price: number;
+  categorId: number;
+  supplierId: number;
+}
 
 export async function getProducts() {
-  const [result] = await pool.execute(`SELECT * FROM products`);
+  const [result] = await pool.execute<Product[]>(`SELECT * FROM products`);
   return result;
 }
 
-export async function getProduct(productId: number) {
-  const [result] = await pool.execute(`SELECT * FROM products WHERE id = ?`, [
-    productId,
-  ]);
-  return result;
+export async function getProduct(productId: number): Promise<Product | null> {
+  const [result] = await pool.execute<Product[]>(
+    `SELECT * FROM products WHERE id = ?`,
+    [productId],
+  );
+  return result[0] ?? null;
 }
 
 export async function createProduct(
-  name: string,
-  sku: string,
-  price: number,
-  categoryId: number,
-  supplierId: number,
-) {
-  const [result] = await pool.execute(
+  data: CreateProduct,
+): Promise<ResultSetHeader> {
+  const [result] = await pool.execute<ResultSetHeader>(
     `INSERT INTO products
          (name, sku, price, category_id, supplier_id)
         VALUES (?, ?, ?, ?, ?)`,
-    [name, sku, price, categoryId, supplierId],
+    [data.name, data.sku, data.price, data.categoryId, data.supplierId],
   );
   return result;
 }
 
-export async function updateProduct(id: number, data: UpdateProduct) {
+export async function updateProduct(
+  id: number,
+  data: UpdateProduct,
+): Promise<ResultSetHeader> {
   const fields: string[] = [];
   const values: (string | number)[] = [];
 
@@ -59,7 +68,7 @@ export async function updateProduct(id: number, data: UpdateProduct) {
   }
   values.push(id);
 
-  const [result] = await pool.execute(
+  const [result] = await pool.query<ResultSetHeader>(
     `UPDATE products SET ${fields.join(", ")} WHERE id = ?`,
     values,
   );
@@ -67,5 +76,7 @@ export async function updateProduct(id: number, data: UpdateProduct) {
 }
 
 export async function deleteProduct(id: number) {
-  await pool.execute(`DELETE from products WHERE id = ?`, [id]);
+  await pool.execute<ResultSetHeader>(`DELETE from products WHERE id = ?`, [
+    id,
+  ]);
 }

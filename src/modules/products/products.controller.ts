@@ -23,7 +23,7 @@ export async function getProduct(
   try {
     const id = Number(req.params.id);
     const product = await productService.getProduct(id);
-    if (Array.isArray(product) && product.length === 0) {
+    if (!product) {
       throw new NotFoundError("Product does not exists in database");
     }
     return res.status(200).json(product);
@@ -53,7 +53,7 @@ export async function updateProduct(
   try {
     const id = Number(req.params.id);
     const product = await productService.getProduct(id);
-    if (Array.isArray(product) && product.length === 0) {
+    if (!product) {
       throw new NotFoundError("Product does not exists in database");
     }
     const updatedProduct = await productService.updateProduct(id, req.body);
@@ -71,7 +71,7 @@ export async function deleteProduct(
   try {
     const id = Number(req.params.id);
     const product = await productService.getProduct(id);
-    if (Array.isArray(product) && product.length === 0) {
+    if (!product) {
       throw new NotFoundError("Product does not exists in database");
     }
     await productService.deleteProduct(id);

@@ -4,16 +4,40 @@ import {
   deleteUser,
   getUser,
   getUsers,
+  updateUser,
 } from "./user.controller.js";
+import {
+  validateBody,
+  validateParams,
+} from "../../middleware/validationMiddleware.js";
+import {
+  createUserSchema,
+  updateUserSchema,
+  userIdSchema,
+} from "../../types/userType.js";
 
 const userRouter = express.Router();
 
 userRouter.get("/", getUsers);
 
-userRouter.get("/:id", getUser);
+userRouter.get("/:id", validateParams(userIdSchema), getUser);
 
-userRouter.post("/", createUser);
+userRouter.post("/", validateBody(createUserSchema), createUser);
 
-userRouter.delete("/:id", deleteUser);
+userRouter.put(
+  "/:id",
+  validateParams(userIdSchema),
+  validateBody(createUserSchema),
+  updateUser,
+);
+
+userRouter.patch(
+  "/:id",
+  validateParams(userIdSchema),
+  validateBody(updateUserSchema),
+  updateUser,
+);
+
+userRouter.delete("/:id", validateParams(userIdSchema), deleteUser);
 
 export default userRouter;

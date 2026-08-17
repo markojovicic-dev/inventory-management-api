@@ -1,24 +1,23 @@
 import bcrypt from "bcrypt";
 import type { CreateUser, UpdateUser } from "../../types/userType.js";
 import * as userRepository from "./user.repository.js";
+import { NotFoundError } from "../../errors/errorTypes.js";
 
 export async function getUsers() {
   return await userRepository.getUsers();
 }
 
 export async function getUser(id: number) {
-  return await userRepository.getUser(id);
+  const user = await userRepository.getUser(id);
+  if (!user) {
+    throw new NotFoundError("User does not exists in database");
+  }
+  return user;
 }
 
-export async function createUser(data: {
-  name: string;
-  last_name: string;
-  email: string;
-  password: string;
-}) {
+export async function createUser(data: CreateUser) {
   const { name, last_name, email, password } = data;
-  const salt = await bcrypt.genSaltSync(10);
-  const hashed_password = await bcrypt.hashSync(password, salt);
+  const hashed_password = await bcrypt.hash(password, 10);
   const user = await userRepository.createUser(
     name,
     last_name,
@@ -29,10 +28,18 @@ export async function createUser(data: {
 }
 
 export async function updateUser(id: number, data: UpdateUser) {
+  const user = await userRepository.getUser(id);
+  if (!user) {
+    throw new NotFoundError("User does not exists in database");
+  }
   await userRepository.updateUser(id, data);
   return await userRepository.getUser(id);
 }
 
 export async function deleteUser(id: number) {
+  const user = await userRepository.getUser(id);
+  if (!user) {
+    throw new NotFoundError("User does not exists in database");
+  }
   return await userRepository.deleteUser(id);
 }

@@ -66,6 +66,10 @@ export async function updateProduct(
     fields.push("supplier_id = ?");
     values.push(data.supplierId);
   }
+  if (data.description !== undefined) {
+    fields.push("description = ?");
+    values.push(data.description);
+  }
   values.push(id);
 
   const [result] = await pool.query<ResultSetHeader>(

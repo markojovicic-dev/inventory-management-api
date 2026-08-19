@@ -15,6 +15,7 @@ import {
   updateUserSchema,
   userIdSchema,
 } from "../../types/userType.js";
+import { authenticate } from "../../middleware/authenticateMiddleware.js";
 
 const userRouter = express.Router();
 
@@ -22,10 +23,11 @@ userRouter.get("/", getUsers);
 
 userRouter.get("/:id", validateParams(userIdSchema), getUser);
 
-userRouter.post("/", validateBody(createUserSchema), createUser);
+userRouter.post("/", authenticate, validateBody(createUserSchema), createUser);
 
 userRouter.put(
   "/:id",
+  authenticate,
   validateParams(userIdSchema),
   validateBody(createUserSchema),
   updateUser,
@@ -33,11 +35,17 @@ userRouter.put(
 
 userRouter.patch(
   "/:id",
+  authenticate,
   validateParams(userIdSchema),
   validateBody(updateUserSchema),
   updateUser,
 );
 
-userRouter.delete("/:id", validateParams(userIdSchema), deleteUser);
+userRouter.delete(
+  "/:id",
+  authenticate,
+  validateParams(userIdSchema),
+  deleteUser,
+);
 
 export default userRouter;

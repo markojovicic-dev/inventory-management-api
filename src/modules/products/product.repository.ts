@@ -1,6 +1,7 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
 import type { CreateProduct, UpdateProduct } from "../../types/productType.js";
+import { handleDatabaseErrors } from "../../errors/databaseErrors.js";
 
 export interface Product extends RowDataPacket {
   name: string;
@@ -16,23 +17,31 @@ export async function getProducts() {
 }
 
 export async function getProduct(productId: number): Promise<Product | null> {
-  const [result] = await pool.execute<Product[]>(
-    `SELECT * FROM products WHERE id = ?`,
-    [productId],
-  );
-  return result[0] ?? null;
+  try {
+    const [result] = await pool.execute<Product[]>(
+      `SELECT * FROM products WHERE id = ?`,
+      [productId],
+    );
+    return result[0] ?? null;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function createProduct(
   data: CreateProduct,
 ): Promise<ResultSetHeader> {
-  const [result] = await pool.execute<ResultSetHeader>(
-    `INSERT INTO products
-         (name, sku, price, category_id, supplier_id)
-        VALUES (?, ?, ?, ?, ?)`,
-    [data.name, data.sku, data.price, data.categoryId, data.supplierId],
-  );
-  return result;
+  try {
+    const [result] = await pool.execute<ResultSetHeader>(
+      `INSERT INTO products
+           (name, sku, price, category_id, supplier_id)
+          VALUES (?, ?, ?, ?, ?)`,
+      [data.name, data.sku, data.price, data.categoryId, data.supplierId],
+    );
+    return result;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function updateProduct(
@@ -71,16 +80,23 @@ export async function updateProduct(
     values.push(data.description);
   }
   values.push(id);
-
-  const [result] = await pool.query<ResultSetHeader>(
-    `UPDATE products SET ${fields.join(", ")} WHERE id = ?`,
-    values,
-  );
-  return result;
+  try {
+    const [result] = await pool.query<ResultSetHeader>(
+      `UPDATE products SET ${fields.join(", ")} WHERE id = ?`,
+      values,
+    );
+    return result;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function deleteProduct(id: number) {
-  await pool.execute<ResultSetHeader>(`DELETE from products WHERE id = ?`, [
-    id,
-  ]);
+  try {
+    await pool.execute<ResultSetHeader>(`DELETE from products WHERE id = ?`, [
+      id,
+    ]);
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }

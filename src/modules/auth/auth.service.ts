@@ -14,8 +14,8 @@ export async function login(data: LoginSchema) {
   if (!validPassword) {
     throw new UnauthorizedError("Invalid email or password");
   }
-  const accessToken = sign(user.id);
-  const refreshToken = signRefresh(user.id);
+  const accessToken = sign(user.id, user.role);
+  const refreshToken = signRefresh(user.id, user.role);
   return {
     userId: user.id,
     accessToken,

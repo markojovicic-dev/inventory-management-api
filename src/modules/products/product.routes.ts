@@ -17,6 +17,7 @@ import {
   updateProductSchema,
 } from "../../types/productType.js";
 import { authenticate } from "../../middleware/authenticateMiddleware.js";
+import { authorize } from "../../middleware/authorizationMiddleware.js";
 
 const productRouter = Express.Router();
 
@@ -27,6 +28,7 @@ productRouter.get("/:id", validateParams(productIdSchema), getProduct);
 productRouter.post(
   "/",
   authenticate,
+  authorize("admin"),
   validateBody(createProductSchema),
   createProduct,
 );
@@ -34,6 +36,7 @@ productRouter.post(
 productRouter.put(
   "/:id",
   authenticate,
+  authorize("admin"),
   validateParams(productIdSchema),
   validateBody(createProductSchema),
   updateProduct,
@@ -42,6 +45,7 @@ productRouter.put(
 productRouter.patch(
   "/:id",
   authenticate,
+  authorize("admin"),
   validateParams(productIdSchema),
   validateBody(updateProductSchema),
   updateProduct,
@@ -50,6 +54,7 @@ productRouter.patch(
 productRouter.delete(
   "/:id",
   authenticate,
+  authorize("admin"),
   validateParams(productIdSchema),
   deleteProduct,
 );

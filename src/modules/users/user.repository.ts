@@ -1,6 +1,7 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
 import type { UpdateUser } from "../../types/userType.js";
+import { handleDatabaseErrors } from "../../errors/databaseErrors.js";
 
 export interface User extends RowDataPacket {
   id: number;
@@ -8,7 +9,10 @@ export interface User extends RowDataPacket {
   last_name: string;
   email: string;
   password: string;
+  role: Role;
 }
+
+export type Role = "admin" | "user";
 
 export async function getUsers() {
   const [result] = await pool.execute<User[]>(`SELECT * FROM users`);
@@ -16,19 +20,27 @@ export async function getUsers() {
 }
 
 export async function getUser(id: number): Promise<User | null> {
-  const [result] = await pool.execute<User[]>(
-    `SELECT * FROM users WHERE id = ?`,
-    [id],
-  );
-  return result[0] ?? null;
+  try {
+    const [result] = await pool.execute<User[]>(
+      `SELECT * FROM users WHERE id = ?`,
+      [id],
+    );
+    return result[0] ?? null;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-  const [result] = await pool.execute<User[]>(
-    `SELECT * FROM users WHERE email = ?`,
-    [email],
-  );
-  return result[0] ?? null;
+  try {
+    const [result] = await pool.execute<User[]>(
+      `SELECT * FROM users WHERE email = ?`,
+      [email],
+    );
+    return result[0] ?? null;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function createUser(
@@ -37,11 +49,15 @@ export async function createUser(
   email: string,
   password: string,
 ): Promise<ResultSetHeader> {
-  const [result] = await pool.execute<ResultSetHeader>(
-    `INSERT INTO users (name, last_name, email, password) VALUES (?, ?, ?, ?)`,
-    [name, last_name, email, password],
-  );
-  return result;
+  try {
+    const [result] = await pool.execute<ResultSetHeader>(
+      `INSERT INTO users (name, last_name, email, password) VALUES (?, ?, ?, ?)`,
+      [name, last_name, email, password],
+    );
+    return result;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function updateUser(
@@ -73,13 +89,21 @@ export async function updateUser(
 
   values.push(id);
 
-  const [result] = await pool.query<ResultSetHeader>(
-    `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,
-    values,
-  );
-  return result;
+  try {
+    const [result] = await pool.query<ResultSetHeader>(
+      `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,
+      values,
+    );
+    return result;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function deleteUser(id: number) {
-  await pool.query<ResultSetHeader>(`DELETE FROM users WHERE id = ?`, [id]);
+  try {
+    await pool.query<ResultSetHeader>(`DELETE FROM users WHERE id = ?`, [id]);
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import type { User } from "../users/user.repository.js";
+import type { Role, User } from "../users/user.repository.js";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -8,16 +8,17 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 export type JwtPayload = {
   userId: User["id"];
   type: "access" | "refresh";
+  role: Role;
 };
 
-export function sign(userId: User["id"]): string {
-  return jwt.sign({ userId, type: "access" }, JWT_SECRET, {
+export function sign(userId: User["id"], role: Role): string {
+  return jwt.sign({ userId, type: "access", role }, JWT_SECRET, {
     expiresIn: "15m",
   });
 }
 
-export function signRefresh(userId: User["id"]): string {
-  return jwt.sign({ userId, type: "refresh" }, JWT_REFRESH_SECRET, {
+export function signRefresh(userId: User["id"], role: Role): string {
+  return jwt.sign({ userId, type: "refresh", role }, JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
 }

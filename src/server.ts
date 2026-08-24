@@ -13,6 +13,7 @@ async function startServer() {
     app.listen(port, () => console.log(`Listening on port ${port}`));
   } catch (err) {
     console.log(`Databse connection failed: ${err}`);
+    process.exit(1);
   }
 }
 

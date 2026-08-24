@@ -32,6 +32,9 @@ export async function updateUser(id: number, data: UpdateUser) {
   if (!user) {
     throw new NotFoundError("User does not exists in database");
   }
+  if (data.password) {
+    data.password = await bcrypt.hash(data.password, 10);
+  }
   await userRepository.updateUser(id, data);
   return await userRepository.getUser(id);
 }

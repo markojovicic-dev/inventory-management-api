@@ -7,8 +7,10 @@ export function validateBody(schema: ZodSchema) {
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
-      throw new BadRequestError(
-        result.error.issues.map((issue) => issue.message).join(", "),
+      return next(
+        new BadRequestError(
+          result.error.issues.map((issue) => issue.message).join(", "),
+        ),
       );
     }
 
@@ -20,18 +22,16 @@ export function validateBody(schema: ZodSchema) {
 
 export function validateParams(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = schema.safeParse(req.params);
+    const result = schema.safeParse(req.params);
 
-      if (!result.success) {
-        throw new BadRequestError(
+    if (!result.success) {
+      return next(
+        new BadRequestError(
           result.error.issues.map((issue) => issue.message).join(", "),
-        );
-      }
-
-      next();
-    } catch (error) {
-      next(new BadRequestError("Invalid parameters"));
+        ),
+      );
     }
+
+    next();
   };
 }

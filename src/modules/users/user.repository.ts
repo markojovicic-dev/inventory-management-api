@@ -2,6 +2,7 @@ import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
 import type { UpdateUser } from "../../types/userType.js";
 import { handleDatabaseErrors } from "../../errors/databaseErrors.js";
+import type { Role } from "../../types/authType.js";
 
 export interface User extends RowDataPacket {
   id: number;
@@ -11,8 +12,6 @@ export interface User extends RowDataPacket {
   password: string;
   role: Role;
 }
-
-export type Role = "admin" | "user";
 
 export async function getUsers() {
   const [result] = await pool.execute<

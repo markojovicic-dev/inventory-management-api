@@ -9,4 +9,6 @@ export const loginSchema = z.object({
     .max(32, "Password must have 32 charachters max"),
 });
 
+export type Role = "admin" | "user";
+
 export type LoginSchema = z.infer<typeof loginSchema>;

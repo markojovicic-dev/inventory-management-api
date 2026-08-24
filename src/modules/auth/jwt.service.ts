@@ -5,10 +5,17 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 
-export type JwtPayload = {
+export type AccessPayload = {
   userId: User["id"];
-  type: "access" | "refresh";
+  type: "access";
   role: Role;
+};
+
+export type RefreshPayload = {
+  userId: User["id"];
+  type: "refresh";
+  role: Role;
+  jti: string;
 };
 
 export function sign(userId: User["id"], role: Role): string {
@@ -17,14 +24,18 @@ export function sign(userId: User["id"], role: Role): string {
   });
 }
 
-export function signRefresh(userId: User["id"], role: Role): string {
-  return jwt.sign({ userId, type: "refresh", role }, JWT_REFRESH_SECRET, {
+export function signRefresh(
+  userId: User["id"],
+  role: Role,
+  jti: string,
+): string {
+  return jwt.sign({ userId, type: "refresh", role, jti }, JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
 }
 
-export function verify(token: string): JwtPayload {
-  const payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
+export function verify(token: string): AccessPayload {
+  const payload = jwt.verify(token, JWT_SECRET) as AccessPayload;
 
   if (payload.type !== "access") {
     throw new Error("Invalid token type");
@@ -32,15 +43,11 @@ export function verify(token: string): JwtPayload {
   return payload;
 }
 
-export function verifyRefresh(token: string): JwtPayload {
-  const payload = jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayload;
+export function verifyRefresh(token: string): RefreshPayload {
+  const payload = jwt.verify(token, JWT_REFRESH_SECRET) as RefreshPayload;
 
   if (payload.type !== "refresh") {
     throw new Error("Invalid token type");
   }
   return payload;
-}
-
-export function decode(token: string): JwtPayload | null {
-  return jwt.decode(token) as JwtPayload | null;
 }

@@ -15,6 +15,8 @@ import {
   createCategorySchema,
   updateCategorySchema,
 } from "../../types/categoryType.js";
+import { authenticate } from "../../middleware/authenticateMiddleware.js";
+import { authorize } from "../../middleware/authorizationMiddleware.js";
 
 const categoriesRouter = express.Router();
 
@@ -22,23 +24,37 @@ categoriesRouter.get("/", getAllCategories);
 
 categoriesRouter.get("/:id", validateParams(categoryIdSchema), getCategory);
 
-categoriesRouter.post("/", validateBody(createCategorySchema), createCategory);
+categoriesRouter.post(
+  "/",
+  authenticate,
+  authorize("admin"),
+  validateBody(createCategorySchema),
+  createCategory,
+);
 
 categoriesRouter.put(
   "/:id",
-  validateParams(createCategorySchema),
+  authenticate,
+  authorize("admin"),
+  validateParams(categoryIdSchema),
+  validateBody(createCategorySchema),
   updateCategory,
 );
 
 categoriesRouter.patch(
   "/:id",
-  validateParams(updateCategorySchema),
+  authenticate,
+  authorize("admin"),
+  validateParams(categoryIdSchema),
+  validateBody(updateCategorySchema),
   updateCategory,
 );
 
 categoriesRouter.delete(
   "/:id",
-  validateParams(createCategorySchema),
+  authenticate,
+  authorize("admin"),
+  validateParams(categoryIdSchema),
   deleteCategory,
 );
 

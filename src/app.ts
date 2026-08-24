@@ -6,15 +6,19 @@ import productRouter from "./modules/products/product.routes.js";
 import userRouter from "./modules/users/user.routes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import categoriesRouter from "./modules/categories/categories.routes.js";
+import supplierRoute from "./modules/suppliers/suppliers.route.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(router);
 app.use("/auth", authRuter);
 app.use("/users", userRouter);
 app.use("/products", productRouter);
+app.use("/suppliers", supplierRoute);
 app.use("/categories", categoriesRouter);
 
 app.use((req, res, next) => {

@@ -16,18 +16,32 @@ import {
   userIdSchema,
 } from "../../types/userType.js";
 import { authenticate } from "../../middleware/authenticateMiddleware.js";
+import { authorize } from "../../middleware/authorizationMiddleware.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/", getUsers);
+userRouter.get("/", authenticate, authorize("admin"), getUsers);
 
-userRouter.get("/:id", validateParams(userIdSchema), getUser);
+userRouter.get(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  validateParams(userIdSchema),
+  getUser,
+);
 
-userRouter.post("/", authenticate, validateBody(createUserSchema), createUser);
+userRouter.post(
+  "/",
+  authenticate,
+  authorize("admin"),
+  validateBody(createUserSchema),
+  createUser,
+);
 
 userRouter.put(
   "/:id",
   authenticate,
+  authorize("admin"),
   validateParams(userIdSchema),
   validateBody(createUserSchema),
   updateUser,
@@ -36,6 +50,7 @@ userRouter.put(
 userRouter.patch(
   "/:id",
   authenticate,
+  authorize("admin"),
   validateParams(userIdSchema),
   validateBody(updateUserSchema),
   updateUser,
@@ -44,6 +59,7 @@ userRouter.patch(
 userRouter.delete(
   "/:id",
   authenticate,
+  authorize("admin"),
   validateParams(userIdSchema),
   deleteUser,
 );

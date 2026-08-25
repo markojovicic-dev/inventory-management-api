@@ -1,4 +1,3 @@
-import { describe } from "node:test";
 import * as z from "zod";
 
 export const productIdSchema = z.object({

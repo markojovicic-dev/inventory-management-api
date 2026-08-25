@@ -6,7 +6,7 @@ import productRouter from "./modules/products/product.routes.js";
 import userRouter from "./modules/users/user.routes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import categoriesRouter from "./modules/categories/categories.routes.js";
-import supplierRoute from "./modules/suppliers/suppliers.route.js";
+import supplierRoute from "./modules/suppliers/supplier.route.js";
 import cookieParser from "cookie-parser";
 
 const app = express();

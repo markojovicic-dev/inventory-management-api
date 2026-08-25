@@ -1,3 +1,4 @@
+import { NotFoundError } from "../../errors/errorTypes.js";
 import type { CreateProduct, UpdateProduct } from "../../types/productType.js";
 import * as productRepository from "./product.repository.js";
 
@@ -6,7 +7,11 @@ export async function getProducts() {
 }
 
 export async function getProduct(id: number) {
-  return await productRepository.getProduct(id);
+  const product = await productRepository.getProduct(id);
+  if (!product) {
+    throw new NotFoundError("Product does not exists in database");
+  }
+  return product;
 }
 
 export async function createProduct(data: CreateProduct) {
@@ -14,6 +19,10 @@ export async function createProduct(data: CreateProduct) {
 }
 
 export async function updateProduct(id: number, data: UpdateProduct) {
+  const product = await productRepository.getProduct(id);
+  if (!product) {
+    throw new NotFoundError("Product does not exists in database");
+  }
   await productRepository.updateProduct(id, data);
   return await productRepository.getProduct(id);
 }

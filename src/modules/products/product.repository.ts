@@ -12,14 +12,16 @@ export interface Product extends RowDataPacket {
 }
 
 export async function getProducts() {
-  const [result] = await pool.execute<Product[]>(`SELECT * FROM products`);
+  const [result] = await pool.execute<Product[]>(
+    `SELECT id, name, sku, price, category_id, supplier_id FROM products`,
+  );
   return result;
 }
 
 export async function getProduct(productId: number): Promise<Product | null> {
   try {
     const [result] = await pool.execute<Product[]>(
-      `SELECT * FROM products WHERE id = ?`,
+      `SELECT id, name, sku, price, category_id, supplier_id FROM products WHERE id = ?`,
       [productId],
     );
     return result[0] ?? null;

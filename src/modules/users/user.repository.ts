@@ -16,7 +16,7 @@ export interface User extends RowDataPacket {
 export async function getUsers() {
   const [result] = await pool.execute<
     User[]
-  >(`SELECT id, name, last_name, email, role, created_at, updated_at
+  >(`SELECT id, name, last_name, email, role
     FROM users`);
   return result;
 }
@@ -24,7 +24,7 @@ export async function getUsers() {
 export async function getUser(id: number): Promise<User | null> {
   try {
     const [result] = await pool.execute<User[]>(
-      `SELECT id, name, last_name, email, role, created_at, updated_at FROM users WHERE id = ?`,
+      `SELECT id, name, last_name, email, role FROM users WHERE id = ?`,
       [id],
     );
     return result[0] ?? null;
@@ -36,7 +36,7 @@ export async function getUser(id: number): Promise<User | null> {
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
     const [result] = await pool.execute<User[]>(
-      `SELECT * FROM users WHERE email = ?`,
+      `SELECT id, name, last_name, email, role FROM users WHERE email = ?`,
       [email],
     );
     return result[0] ?? null;

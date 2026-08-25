@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import * as productService from "./product.service.js";
-import { BadRequestError, NotFoundError } from "../../errors/errorTypes.js";
+import { NotFoundError } from "../../errors/errorTypes.js";
 
 export async function getProducts(
   req: Request,
@@ -23,9 +23,6 @@ export async function getProduct(
   try {
     const id = Number(req.params.id);
     const product = await productService.getProduct(id);
-    if (!product) {
-      throw new NotFoundError("Product does not exists in database");
-    }
     return res.status(200).json(product);
   } catch (error) {
     next(error);
@@ -52,10 +49,6 @@ export async function updateProduct(
 ) {
   try {
     const id = Number(req.params.id);
-    const product = await productService.getProduct(id);
-    if (!product) {
-      throw new NotFoundError("Product does not exists in database");
-    }
     const updatedProduct = await productService.updateProduct(id, req.body);
     return res.status(200).json(updatedProduct);
   } catch (error) {

@@ -73,7 +73,7 @@ export async function updateSupplier(id: number, data: UpdateSupplier) {
   values.push(id);
   try {
     await pool.execute<ResultSetHeader>(
-      `UPDATE suppliers SET ${fields.join(", ")}`,
+      `UPDATE suppliers SET ${fields.join(", ")} WHERE id = ?`,
       values,
     );
   } catch (error) {

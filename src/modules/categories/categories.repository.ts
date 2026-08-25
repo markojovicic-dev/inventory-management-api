@@ -2,7 +2,6 @@ import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
 import type { CreateCategory } from "../../types/categoryType.js";
 import { handleDatabaseErrors } from "../../errors/databaseErrors.js";
-import { resourceLimits } from "node:worker_threads";
 
 export interface Category extends RowDataPacket {
   name: string;

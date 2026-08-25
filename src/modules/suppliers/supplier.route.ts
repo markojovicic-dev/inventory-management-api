@@ -15,17 +15,32 @@ import {
   supplierId,
   updateSupplierSchema,
 } from "../../types/supplierType.js";
+import { authenticate } from "../../middleware/authenticateMiddleware.js";
+import { authorize } from "../../middleware/authorizationMiddleware.js";
 
 const supplierRoute = express.Router();
 
-supplierRoute.get("/", getSuppliers);
+supplierRoute.get("/", authenticate, getSuppliers);
 
-supplierRoute.get("/:id", validateParams(supplierId), getSupplier);
+supplierRoute.get(
+  "/:id",
+  authenticate,
+  validateParams(supplierId),
+  getSupplier,
+);
 
-supplierRoute.post("/", validateBody(createSupplierSchema), createSupplier);
+supplierRoute.post(
+  "/",
+  authenticate,
+  authorize("admin"),
+  validateBody(createSupplierSchema),
+  createSupplier,
+);
 
 supplierRoute.put(
   "/:id",
+  authenticate,
+  authorize("admin"),
   validateParams(supplierId),
   validateBody(createSupplierSchema),
   updateSupplier,
@@ -33,11 +48,19 @@ supplierRoute.put(
 
 supplierRoute.patch(
   "/:id",
+  authenticate,
+  authorize("admin"),
   validateParams(supplierId),
   validateBody(updateSupplierSchema),
   updateSupplier,
 );
 
-supplierRoute.delete("/:id", validateParams(supplierId), deleteSupplier);
+supplierRoute.delete(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  validateParams(supplierId),
+  deleteSupplier,
+);
 
 export default supplierRoute;

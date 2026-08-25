@@ -1,4 +1,14 @@
+import type { RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
+
+export interface RefreshToken extends RowDataPacket {
+  id: number;
+  user_id: number;
+  token_hash: string;
+  jti: string;
+  expires_at: Date;
+  revoked_at: Date | null;
+}
 
 export async function createRefreshToken(
   userId: number,
@@ -13,12 +23,11 @@ export async function createRefreshToken(
 }
 
 export async function getRefreshToken(jti: string) {
-  const [rows] = await pool.execute(
+  const [rows] = await pool.execute<RefreshToken[]>(
     `SELECT * FROM refresh_tokens WHERE jti = ? AND revoked_at IS NULL AND expires_at > NOW() LIMIT 1`,
     [jti],
   );
-  const tokens = rows as any[];
-  return tokens[0] ?? null;
+  return rows[0] ?? null;
 }
 
 export async function revokeRefreshToken(id: number) {

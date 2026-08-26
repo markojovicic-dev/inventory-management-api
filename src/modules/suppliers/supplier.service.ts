@@ -1,4 +1,4 @@
-import * as supplierRepositoy from "./supplier.repositoy.js";
+import * as supplierRepositoy from "./supplier.repository.js";
 import type {
   CreateSupplier,
   UpdateSupplier,

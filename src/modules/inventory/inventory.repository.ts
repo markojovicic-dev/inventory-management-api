@@ -33,6 +33,20 @@ export async function getInventory(id: number): Promise<Inventory | null> {
   }
 }
 
+export async function getInventoryByProduct(
+  product_id: number,
+): Promise<Inventory | null> {
+  try {
+    const [result] = await pool.execute<Inventory[]>(
+      `SELECT id, product_id, quantity, reserved, reorder_quantity FROM inventory WHERE product_id = ?`,
+      [product_id],
+    );
+    return result[0] ?? null;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
+}
+
 export async function createInventory(
   data: CreateInventory,
 ): Promise<ResultSetHeader> {
@@ -54,10 +68,6 @@ export async function updateInventory(
   const fields: string[] = [];
   const values: (string | number)[] = [];
 
-  if (data.product_id !== undefined) {
-    fields.push("product_id = ?");
-    values.push(data.product_id);
-  }
   if (data.quantity !== undefined) {
     fields.push("quantity = ?");
     values.push(data.quantity);

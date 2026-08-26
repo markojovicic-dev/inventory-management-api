@@ -1,4 +1,4 @@
-import { NotFoundError } from "../../errors/errorTypes.js";
+import { ConflictError, NotFoundError } from "../../errors/errorTypes.js";
 import type { CreateInventory } from "../../types/inventoryType.js";
 import * as inventoryRepositoy from "./inventory.repository.js";
 import * as productRepository from "../products/product.repository.js";
@@ -19,6 +19,14 @@ export async function createInventory(data: CreateInventory) {
   const product = await productRepository.getProduct(data.product_id);
   if (!product) {
     throw new NotFoundError(`Product id ${data.product_id} does not exists`);
+  }
+  const inventoryExists = await inventoryRepositoy.getInventoryByProduct(
+    data.product_id,
+  );
+  if (inventoryExists) {
+    throw new ConflictError(
+      `Inventory for product with id ${data.product_id} already exists`,
+    );
   }
   const inventory = await inventoryRepositoy.createInventory(data);
   return inventory;

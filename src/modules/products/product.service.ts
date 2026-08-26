@@ -2,7 +2,7 @@ import { NotFoundError } from "../../errors/errorTypes.js";
 import type { CreateProduct, UpdateProduct } from "../../types/productType.js";
 import * as productRepository from "./product.repository.js";
 import * as categoryRepository from "../categories/categories.repository.js";
-import * as supplierRepository from "../suppliers/supplier.repositoy.js";
+import * as supplierRepository from "../suppliers/supplier.repository.js";
 
 export async function getProducts() {
   return productRepository.getProducts();
@@ -19,11 +19,11 @@ export async function getProduct(id: number) {
 export async function createProduct(data: CreateProduct) {
   const category = await categoryRepository.findCategory(data.categoryId);
   if (!category) {
-    throw new NotFoundError("Category not found");
+    throw new NotFoundError(`Category id ${data.categoryId} not found`);
   }
   const supplier = await supplierRepository.getSupplier(data.supplierId);
   if (!supplier) {
-    throw new NotFoundError("Supplier not found");
+    throw new NotFoundError(`Supplier id ${data.supplierId} not found`);
   }
   return await productRepository.createProduct(data);
 }

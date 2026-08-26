@@ -63,10 +63,6 @@ export async function deleteProduct(
 ) {
   try {
     const id = Number(req.params.id);
-    const product = await productService.getProduct(id);
-    if (!product) {
-      throw new NotFoundError("Product does not exists in database");
-    }
     await productService.deleteProduct(id);
     return res.status(200).json({ message: `Deleted product with id: ${id}` });
   } catch (error) {

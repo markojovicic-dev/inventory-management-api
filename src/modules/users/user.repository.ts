@@ -36,7 +36,7 @@ export async function getUser(id: number): Promise<User | null> {
 export async function getUserByEmail(email: string): Promise<User | null> {
   try {
     const [result] = await pool.execute<User[]>(
-      `SELECT id, name, last_name, email, role FROM users WHERE email = ?`,
+      `SELECT id, name, last_name, email, role, password FROM users WHERE email = ?`,
       [email],
     );
     return result[0] ?? null;

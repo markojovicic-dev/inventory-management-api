@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import type { Role } from "../modules/users/user.repository.js";
+import type { Role } from "../types/authType.js";
 import { ForbiddenError, UnauthorizedError } from "../errors/errorTypes.js";
 
 export function authorize(...allowedRoles: Role[]) {

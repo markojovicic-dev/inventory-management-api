@@ -7,8 +7,8 @@ export interface Product extends RowDataPacket {
   name: string;
   sku: string;
   price: number;
-  categorId: number;
-  supplierId: number;
+  categor_id: number;
+  supplier_id: number;
 }
 
 export async function getProducts() {

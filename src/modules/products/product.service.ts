@@ -23,10 +23,13 @@ export async function updateProduct(id: number, data: UpdateProduct) {
   if (!product) {
     throw new NotFoundError("Product does not exists in database");
   }
-  await productRepository.updateProduct(id, data);
-  return await productRepository.getProduct(id);
+  return await productRepository.updateProduct(id, data);
 }
 
 export async function deleteProduct(id: number) {
+  const product = await productRepository.getProduct(id);
+  if (!product) {
+    throw new NotFoundError("Product does not exists in database");
+  }
   await productRepository.deleteProduct(id);
 }

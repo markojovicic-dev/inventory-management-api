@@ -9,6 +9,7 @@ import categoriesRouter from "./modules/categories/categories.routes.js";
 import supplierRoute from "./modules/suppliers/supplier.route.js";
 import cookieParser from "cookie-parser";
 import inventoryRoute from "./modules/inventory/inventory.route.js";
+import transactionRoute from "./modules/inventory_transactions/inventory_transactions.route.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/products", productRouter);
 app.use("/suppliers", supplierRoute);
 app.use("/categories", categoriesRouter);
 app.use("/inventory", inventoryRoute);
+app.use("/transactions", transactionRoute);
 
 app.use((req, res, next) => {
   res.status(404).json({ message: "This METHOD or this URL does not exists" });

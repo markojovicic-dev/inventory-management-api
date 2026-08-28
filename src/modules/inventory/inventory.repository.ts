@@ -13,7 +13,7 @@ export interface Inventory extends RowDataPacket {
 export async function getAllInventories() {
   try {
     const [result] = await pool.execute<Inventory[]>(
-      `SELECT id, product_id, quantity, reserved, reorder_quantity FROM inventory`,
+      `SELECT id, product_id, quantity, reserved_quantity, reorder_quantity FROM inventory`,
     );
     return result;
   } catch (error) {
@@ -24,7 +24,7 @@ export async function getAllInventories() {
 export async function getInventory(id: number): Promise<Inventory | null> {
   try {
     const [result] = await pool.execute<Inventory[]>(
-      `SELECT id, product_id, quantity, reserved, reorder_quantity FROM inventory WHERE id = ?`,
+      `SELECT id, product_id, quantity, reserved_quantity, reorder_quantity FROM inventory WHERE id = ?`,
       [id],
     );
     return result[0] ?? null;
@@ -38,7 +38,7 @@ export async function getInventoryByProduct(
 ): Promise<Inventory | null> {
   try {
     const [result] = await pool.execute<Inventory[]>(
-      `SELECT id, product_id, quantity, reserved, reorder_quantity FROM inventory WHERE product_id = ?`,
+      `SELECT id, product_id, quantity, reserved_quantity, reorder_quantity FROM inventory WHERE product_id = ?`,
       [product_id],
     );
     return result[0] ?? null;
@@ -52,7 +52,7 @@ export async function createInventory(
 ): Promise<ResultSetHeader> {
   try {
     const [result] = await pool.execute<ResultSetHeader>(
-      `INSERT INTO inventory (product_id, quantity, reserved, reorder_quantity) VALUES (?, ?, ?, ?)`,
+      `INSERT INTO inventory (product_id, quantity, reserved_quantity, reorder_quantity) VALUES (?, ?, ?, ?)`,
       [data.product_id, data.quantity, data.reserved, data.reorder_quantity],
     );
     return result;
@@ -73,7 +73,7 @@ export async function updateInventory(
     values.push(data.quantity);
   }
   if (data.reserved !== undefined) {
-    fields.push("reserved = ?");
+    fields.push("reserved_quantity = ?");
     values.push(data.reserved);
   }
   if (data.reorder_quantity !== undefined) {

@@ -1,9 +1,10 @@
-import type { JwtPayload } from "../modules/auth/jwt.service.js";
-
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload;
+      user?: {
+        id: number;
+        role: "user" | "admin";
+      };
     }
   }
 }

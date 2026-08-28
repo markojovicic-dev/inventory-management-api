@@ -1,6 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
 import * as productService from "./product.service.js";
-import { NotFoundError } from "../../errors/errorTypes.js";
 
 export async function getProducts(
   req: Request,

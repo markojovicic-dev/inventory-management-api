@@ -4,16 +4,18 @@ import type { CreateProduct, UpdateProduct } from "../../types/productType.js";
 import { handleDatabaseErrors } from "../../errors/databaseErrors.js";
 
 export interface Product extends RowDataPacket {
+  id: number;
   name: string;
   sku: string;
+  descrpiton: string | null;
   price: number;
-  categor_id: number;
+  category_id: number;
   supplier_id: number;
 }
 
 export async function getProducts() {
   const [result] = await pool.execute<Product[]>(
-    `SELECT id, name, sku, price, category_id, supplier_id FROM products`,
+    `SELECT id, name, sku, price, description, category_id, supplier_id FROM products WHERE is_active = TRUE`,
   );
   return result;
 }
@@ -21,7 +23,7 @@ export async function getProducts() {
 export async function getProduct(productId: number): Promise<Product | null> {
   try {
     const [result] = await pool.execute<Product[]>(
-      `SELECT id, name, sku, price, category_id, supplier_id FROM products WHERE id = ?`,
+      `SELECT id, name, sku, price, category_id, supplier_id FROM products WHERE id = ? AND is_active = TRUE`,
       [productId],
     );
     return result[0] ?? null;
@@ -33,16 +35,26 @@ export async function getProduct(productId: number): Promise<Product | null> {
 export async function createProduct(
   data: CreateProduct,
 ): Promise<ResultSetHeader> {
+  const connection = await pool.getConnection();
   try {
-    const [result] = await pool.execute<ResultSetHeader>(
+    await connection.beginTransaction();
+    const [product] = await connection.execute<ResultSetHeader>(
       `INSERT INTO products
            (name, sku, price, category_id, supplier_id)
           VALUES (?, ?, ?, ?, ?)`,
       [data.name, data.sku, data.price, data.categoryId, data.supplierId],
     );
-    return result;
+    await connection.execute<ResultSetHeader>(
+      `INSERT INTO inventory (product_id, quantity, reorder_quantity) VALUES (?, ?, ?)`,
+      [product.insertId, 0, 0],
+    );
+    await connection.commit();
+    return product;
   } catch (error) {
+    await connection.rollback();
     handleDatabaseErrors(error);
+  } finally {
+    connection.release();
   }
 }
 
@@ -84,7 +96,7 @@ export async function updateProduct(
   values.push(id);
   try {
     const [result] = await pool.query<ResultSetHeader>(
-      `UPDATE products SET ${fields.join(", ")} WHERE id = ?`,
+      `UPDATE products SET ${fields.join(", ")} WHERE id = ? AND is_active = TRUE`,
       values,
     );
     return result;
@@ -93,11 +105,12 @@ export async function updateProduct(
   }
 }
 
-export async function deleteProduct(id: number) {
+export async function deactivateProduct(id: number) {
   try {
-    await pool.execute<ResultSetHeader>(`DELETE from products WHERE id = ?`, [
-      id,
-    ]);
+    await pool.execute<ResultSetHeader>(
+      `UPDATE products SET is_active = FALSE WHERE id = ? AND is_active = TRUE`,
+      [id],
+    );
   } catch (error) {
     handleDatabaseErrors(error);
   }

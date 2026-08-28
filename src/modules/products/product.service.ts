@@ -1,4 +1,4 @@
-import { NotFoundError } from "../../errors/errorTypes.js";
+import { BadRequestError, NotFoundError } from "../../errors/errorTypes.js";
 import type { CreateProduct, UpdateProduct } from "../../types/productType.js";
 import * as productRepository from "./product.repository.js";
 import * as categoryRepository from "../categories/categories.repository.js";
@@ -29,9 +29,12 @@ export async function createProduct(data: CreateProduct) {
 }
 
 export async function updateProduct(id: number, data: UpdateProduct) {
+  if (Object.keys(data).length === 0) {
+    throw new BadRequestError("At least one field is required");
+  }
   const product = await productRepository.getProduct(id);
   if (!product) {
-    throw new NotFoundError("Product does not exists in database");
+    throw new NotFoundError(`Product with ID ${id} not found`);
   }
   return await productRepository.updateProduct(id, data);
 }
@@ -41,5 +44,6 @@ export async function deleteProduct(id: number) {
   if (!product) {
     throw new NotFoundError("Product does not exists in database");
   }
-  await productRepository.deleteProduct(id);
+
+  await productRepository.deactivateProduct(id);
 }

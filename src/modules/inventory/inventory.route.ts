@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  createInventory,
   deleteInventory,
   getAllInventories,
   getInventory,
@@ -21,8 +20,6 @@ const inventoryRoute = express.Router();
 inventoryRoute.get("/", getAllInventories);
 
 inventoryRoute.get("/:id", validateParams(inventoryId), getInventory);
-
-inventoryRoute.post("/", validateBody(createInventorySchema), createInventory);
 
 inventoryRoute.put(
   "/:id",

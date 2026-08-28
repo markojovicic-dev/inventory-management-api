@@ -28,19 +28,6 @@ export async function getInventory(
   }
 }
 
-export async function createInventory(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const inventory = await inventoryService.createInventory(req.body);
-    res.status(201).json(inventory);
-  } catch (error) {
-    next(error);
-  }
-}
-
 export async function updateInventory(
   req: Request,
   res: Response,

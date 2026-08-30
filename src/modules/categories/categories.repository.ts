@@ -1,6 +1,9 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
-import type { CreateCategory } from "../../types/categoryType.js";
+import type {
+  CreateCategory,
+  UpdateCategory,
+} from "../../types/categoryType.js";
 import { handleDatabaseErrors } from "../../errors/databaseErrors.js";
 
 export interface Category extends RowDataPacket {
@@ -45,7 +48,7 @@ export async function createCategory(
 
 export async function updateCategory(
   id: number,
-  data: CreateCategory,
+  data: UpdateCategory,
 ): Promise<ResultSetHeader> {
   const fields: string[] = [];
   const values: (string | number)[] = [];

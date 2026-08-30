@@ -38,15 +38,6 @@ userRouter.post(
   createUser,
 );
 
-userRouter.put(
-  "/:id",
-  authenticate,
-  authorize("admin"),
-  validateParams(userIdSchema),
-  validateBody(createUserSchema),
-  updateUser,
-);
-
 userRouter.patch(
   "/:id",
   authenticate,

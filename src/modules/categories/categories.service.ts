@@ -1,5 +1,8 @@
 import { BadRequestError, NotFoundError } from "../../errors/errorTypes.js";
-import type { CreateCategory } from "../../types/categoryType.js";
+import type {
+  CreateCategory,
+  UpdateCategory,
+} from "../../types/categoryType.js";
 import * as categoriesRepository from "./categories.repository.js";
 
 export async function getAllCategories() {
@@ -18,7 +21,7 @@ export async function createCategory(data: CreateCategory) {
   return await categoriesRepository.createCategory(data);
 }
 
-export async function updateCategory(id: number, data: CreateCategory) {
+export async function updateCategory(id: number, data: UpdateCategory) {
   if (Object.keys(data).length === 0) {
     throw new BadRequestError("At least one field is required");
   }

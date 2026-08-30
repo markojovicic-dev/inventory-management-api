@@ -32,15 +32,6 @@ categoriesRouter.post(
   createCategory,
 );
 
-categoriesRouter.put(
-  "/:id",
-  authenticate,
-  authorize("admin"),
-  validateParams(categoryIdSchema),
-  validateBody(createCategorySchema),
-  updateCategory,
-);
-
 categoriesRouter.patch(
   "/:id",
   authenticate,

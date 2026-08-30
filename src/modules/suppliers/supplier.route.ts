@@ -37,15 +37,6 @@ supplierRoute.post(
   createSupplier,
 );
 
-supplierRoute.put(
-  "/:id",
-  authenticate,
-  authorize("admin"),
-  validateParams(supplierId),
-  validateBody(createSupplierSchema),
-  updateSupplier,
-);
-
 supplierRoute.patch(
   "/:id",
   authenticate,

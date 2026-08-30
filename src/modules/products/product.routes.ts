@@ -33,15 +33,6 @@ productRouter.post(
   createProduct,
 );
 
-productRouter.put(
-  "/:id",
-  authenticate,
-  authorize("admin"),
-  validateParams(productIdSchema),
-  validateBody(createProductSchema),
-  updateProduct,
-);
-
 productRouter.patch(
   "/:id",
   authenticate,

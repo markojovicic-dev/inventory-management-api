@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import type { CreateUser, UpdateUser } from "../../types/userType.js";
 import * as userRepository from "./user.repository.js";
-import { NotFoundError } from "../../errors/errorTypes.js";
+import { BadRequestError, NotFoundError } from "../../errors/errorTypes.js";
 
 export async function getUsers() {
   return await userRepository.getUsers();
@@ -28,11 +28,14 @@ export async function createUser(data: CreateUser) {
 }
 
 export async function updateUser(id: number, data: UpdateUser) {
+  if (Object.keys(data).length === 0) {
+    throw new BadRequestError("At least one field is required");
+  }
   const user = await userRepository.getUser(id);
   if (!user) {
     throw new NotFoundError("User does not exists in database");
   }
-  if (data.password) {
+  if (data.password !== undefined) {
     data.password = await bcrypt.hash(data.password, 10);
   }
   await userRepository.updateUser(id, data);

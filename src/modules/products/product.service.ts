@@ -11,7 +11,7 @@ export async function getProducts() {
 export async function getProduct(id: number) {
   const product = await productRepository.getProduct(id);
   if (!product) {
-    throw new NotFoundError("Product does not exists in database");
+    throw new NotFoundError("Product does not exist in database");
   }
   return product;
 }
@@ -36,13 +36,21 @@ export async function updateProduct(id: number, data: UpdateProduct) {
   if (!product) {
     throw new NotFoundError(`Product with ID ${id} not found`);
   }
+  const category = await categoryRepository.findCategory(product.categoryId);
+  if (!category) {
+    throw new NotFoundError(`Category id ${product.categoryId} not found`);
+  }
+  const supplier = await supplierRepository.getSupplier(product.supplierId);
+  if (!supplier) {
+    throw new NotFoundError(`Supplier id ${product.supplierId} not found`);
+  }
   return await productRepository.updateProduct(id, data);
 }
 
 export async function deleteProduct(id: number) {
   const product = await productRepository.getProduct(id);
   if (!product) {
-    throw new NotFoundError("Product does not exists in database");
+    throw new NotFoundError("Product does not exist in database");
   }
 
   await productRepository.deactivateProduct(id);

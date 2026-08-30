@@ -7,23 +7,27 @@ export interface Product extends RowDataPacket {
   id: number;
   name: string;
   sku: string;
-  descrpiton: string | null;
+  description: string | null;
   price: number;
   category_id: number;
   supplier_id: number;
 }
 
 export async function getProducts() {
-  const [result] = await pool.execute<Product[]>(
-    `SELECT id, name, sku, price, description, category_id, supplier_id FROM products WHERE is_active = TRUE`,
-  );
-  return result;
+  try {
+    const [result] = await pool.execute<Product[]>(
+      `SELECT id, name, sku, price, description, category_id, supplier_id FROM products WHERE is_active = TRUE`,
+    );
+    return result;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function getProduct(productId: number): Promise<Product | null> {
   try {
     const [result] = await pool.execute<Product[]>(
-      `SELECT id, name, sku, price, category_id, supplier_id FROM products WHERE id = ? AND is_active = TRUE`,
+      `SELECT id, name, sku, price, description, category_id, supplier_id FROM products WHERE id = ? AND is_active = TRUE`,
       [productId],
     );
     return result[0] ?? null;

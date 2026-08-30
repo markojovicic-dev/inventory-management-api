@@ -1,7 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import pool from "../../config/database.js";
 import { handleDatabaseErrors } from "../../errors/databaseErrors.js";
-import type { CreateTransaction } from "../../types/transactionType.js";
 import { BadRequestError, NotFoundError } from "../../errors/errorTypes.js";
 
 export interface Transaction extends RowDataPacket {
@@ -34,13 +33,18 @@ export async function getTransaction(id: number): Promise<Transaction | null> {
   }
 }
 
-export async function createTransaction(data: Transaction) {
+export async function createTransaction(data: {
+  product_id: number;
+  type: "IN" | "OUT";
+  quantity: number;
+  user_id: number;
+}) {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
     if (data.type === "IN") {
       const [result] = await connection.execute<ResultSetHeader>(
-        `UPDATE inventory SET quantity = quantity + ? WHERE product_id = ?`,
+        `UPDATE inventory SET quantity = quantity + ? WHERE product_id = ? AND is_active = TRUE`,
         [data.quantity, data.product_id],
       );
 
@@ -49,11 +53,11 @@ export async function createTransaction(data: Transaction) {
       }
     } else if (data.type === "OUT") {
       const [result] = await connection.execute<ResultSetHeader>(
-        `UPDATE inventory SET quantity = quantity - ? WHERE product_id = ? AND quantity >= ?`,
+        `UPDATE inventory SET quantity = quantity - ? WHERE product_id = ? AND quantity >= ? AND is_active = TRUE`,
         [data.quantity, data.product_id, data.quantity],
       );
       if (result.affectedRows === 0) {
-        throw new NotFoundError("Insufficient inventory");
+        throw new BadRequestError("Insufficient inventory");
       }
     } else {
       throw new BadRequestError("Invalid transaction type");

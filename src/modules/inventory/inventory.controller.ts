@@ -41,17 +41,3 @@ export async function updateInventory(
     next(error);
   }
 }
-
-export async function deleteInventory(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const id = Number(req.params.id);
-    await inventoryService.deleteInventory(id);
-    res.status(200).json({ message: "Inventory was successfully deleted." });
-  } catch (error) {
-    next(error);
-  }
-}

@@ -7,6 +7,7 @@ export const inventoryId = z.object({
 export const createInventorySchema = z.object({
   product_id: z.int(),
   quantity: z.int().positive(),
+  reorder_level: z.int().positive(),
   reorder_quantity: z.int().positive(),
 });
 

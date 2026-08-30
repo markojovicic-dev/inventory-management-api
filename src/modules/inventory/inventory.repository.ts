@@ -15,7 +15,7 @@ export interface Inventory extends RowDataPacket {
 export async function getAllInventories() {
   try {
     const [result] = await pool.execute<Inventory[]>(
-      `SELECT id, product_id, quantity, reorder_quantity FROM inventory`,
+      `SELECT id, product_id, quantity, reorder_level, reorder_quantity FROM inventory`,
     );
     return result;
   } catch (error) {
@@ -26,7 +26,7 @@ export async function getAllInventories() {
 export async function getInventory(id: number): Promise<Inventory | null> {
   try {
     const [result] = await pool.execute<Inventory[]>(
-      `SELECT id, product_id, quantity, reorder_quantity FROM inventory WHERE id = ?`,
+      `SELECT id, product_id, quantity, reorder_level, reorder_quantity FROM inventory WHERE id = ?`,
       [id],
     );
     return result[0] ?? null;
@@ -40,7 +40,7 @@ export async function getInventoryByProduct(
 ): Promise<Inventory | null> {
   try {
     const [result] = await pool.execute<Inventory[]>(
-      `SELECT id, product_id, quantity, reorder_quantity FROM inventory WHERE product_id = ?`,
+      `SELECT id, product_id, quantity, reorder_level, reorder_quantity FROM inventory WHERE product_id = ?`,
       [product_id],
     );
     return result[0] ?? null;
@@ -54,8 +54,13 @@ export async function createInventory(
 ): Promise<ResultSetHeader> {
   try {
     const [result] = await pool.execute<ResultSetHeader>(
-      `INSERT INTO inventory (product_id, quantity, reorder_quantity) VALUES (?, ?, ?)`,
-      [data.product_id, data.quantity, data.reorder_quantity],
+      `INSERT INTO inventory (product_id, quantity, reorder_level, reorder_quantity) VALUES (?, ?, ?, ?)`,
+      [
+        data.product_id,
+        data.quantity,
+        data.reorder_level,
+        data.reorder_quantity,
+      ],
     );
     return result;
   } catch (error) {
@@ -70,13 +75,13 @@ export async function updateInventory(
   const fields: string[] = [];
   const values: (string | number)[] = [];
 
-  if (data.quantity !== undefined) {
-    fields.push("quantity = ?");
-    values.push(data.quantity);
-  }
   if (data.reorder_quantity !== undefined) {
     fields.push("reorder_quantity = ?");
     values.push(data.reorder_quantity);
+  }
+  if (data.reorder_level !== undefined) {
+    fields.push("reorder_level = ?");
+    values.push(data.reorder_level);
   }
   values.push(id);
   try {

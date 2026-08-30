@@ -14,11 +14,15 @@ export interface User extends RowDataPacket {
 }
 
 export async function getUsers() {
-  const [result] = await pool.execute<
-    User[]
-  >(`SELECT id, name, last_name, email, role
+  try {
+    const [result] = await pool.execute<
+      User[]
+    >(`SELECT id, name, last_name, email, role
     FROM users`);
-  return result;
+    return result;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function getUser(id: number): Promise<User | null> {

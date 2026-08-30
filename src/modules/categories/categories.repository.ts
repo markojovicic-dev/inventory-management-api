@@ -9,8 +9,12 @@ export interface Category extends RowDataPacket {
 }
 
 export async function findAllCategories() {
-  const [result] = await pool.execute<Category[]>(`SELECT * FROM categories`);
-  return result;
+  try {
+    const [result] = await pool.execute<Category[]>(`SELECT * FROM categories`);
+    return result;
+  } catch (error) {
+    handleDatabaseErrors(error);
+  }
 }
 
 export async function findCategory(id: number): Promise<Category | null> {

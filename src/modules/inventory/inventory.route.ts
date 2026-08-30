@@ -35,6 +35,4 @@ inventoryRoute.patch(
   updateInventory,
 );
 
-inventoryRoute.delete("/:id", validateParams(inventoryId), deleteInventory);
-
 export default inventoryRoute;

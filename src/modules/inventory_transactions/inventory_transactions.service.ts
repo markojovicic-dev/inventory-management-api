@@ -14,8 +14,11 @@ export async function getTransaction(id: number) {
   return transaction;
 }
 
-export async function createTransaction(
-  data: transactionsRepository.Transaction,
-) {
+export async function createTransaction(data: {
+  product_id: number;
+  type: "IN" | "OUT";
+  quantity: number;
+  user_id: number;
+}) {
   return await transactionsRepository.createTransaction(data);
 }

@@ -3,7 +3,7 @@ import type {
   CreateSupplier,
   UpdateSupplier,
 } from "../../types/supplierType.js";
-import { NotFoundError } from "../../errors/errorTypes.js";
+import { BadRequestError, NotFoundError } from "../../errors/errorTypes.js";
 
 export async function getSuppliers() {
   const suppliers = await supplierRepositoy.getSuppliers();
@@ -24,6 +24,9 @@ export async function createSupplier(data: CreateSupplier) {
 }
 
 export async function updateSupplier(id: number, data: UpdateSupplier) {
+  if (Object.keys(data).length === 0) {
+    throw new BadRequestError("At least one field is required");
+  }
   const supplier = await supplierRepositoy.getSupplier(id);
   if (!supplier) {
     throw new NotFoundError(`There is no supplier with id ${id}`);
